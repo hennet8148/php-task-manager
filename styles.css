@@ -1,0 +1,65 @@
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa; /* Light gray background */
+    color: #343a40; /* Dark gray text */
+}
+
+header, footer {
+    background-color: #0056b3; /* Blue background */
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+}
+
+nav {
+    background-color: #0069d9; /* Lighter blue */
+    padding: 10px;
+    text-align: center;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
+    font-weight: bold;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+main {
+    padding: 20px;
+}
+
+form {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 15px;
+    border: 1px solid #ccc;
+    background-color: white;
+    border-radius: 5px;
+}
+
+input, select, textarea, button {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+button {
+    background-color: #0056b3;
+    color: white;
+    cursor: pointer;
+    border: none;
+}
+
+button:hover {
+    background-color: #004494;
+}
