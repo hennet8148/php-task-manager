@@ -26,6 +26,13 @@ $model_stock = "";
 $model_cut = "";
 $notes = "";
 
+// Fetch tasks for dropdown
+$tasks_result = $conn->query("SELECT ID, TASK_NAME FROM TASK_TEMPLATE ORDER BY TASK_NAME");
+$tasks = [];
+while ($row = $tasks_result->fetch_assoc()) {
+    $tasks[$row['ID']] = $row['TASK_NAME'];
+}
+
 // Fetch components for dropdowns
 $components_result = $conn->query("SELECT ID, NAME FROM COMPONENTS ORDER BY NAME");
 $components = [];
@@ -105,8 +112,14 @@ if (isset($_GET['edit_id'])) {
         <h2><?php echo empty($setup_id) ? "Add a New Setup Detail" : "Edit Setup Detail"; ?></h2>
         <form method="post" action="">
             <input type="hidden" name="setup_id" value="<?php echo $setup_id; ?>">
-            <label for="task_id">Task ID:</label>
-            <input type="text" id="task_id" name="task_id" value="<?php echo $task_id; ?>" required>
+
+            <label for="task_id">Task:</label>
+            <select id="task_id" name="task_id" required>
+                <option value="">-- Select Task --</option>
+                <?php foreach ($tasks as $id => $name): ?>
+                    <option value="<?php echo $id; ?>" <?php echo $task_id == $id ? 'selected' : ''; ?>><?php echo $name; ?></option>
+                <?php endforeach; ?>
+            </select>
 
             <label for="model_stock">Model Stock:</label>
             <select id="model_stock" name="model_stock" required>
@@ -135,7 +148,7 @@ if (isset($_GET['edit_id'])) {
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Task ID</th>
+                    <th>Task</th>
                     <th>Model Stock</th>
                     <th>Model Cut</th>
                     <th>Notes</th>
@@ -146,8 +159,9 @@ if (isset($_GET['edit_id'])) {
             </thead>
             <tbody>
                 <?php
-                $result = $conn->query("SELECT sd.*, cs1.NAME AS STOCK_NAME, cs2.NAME AS CUT_NAME
+                $result = $conn->query("SELECT sd.*, t.TASK_NAME, cs1.NAME AS STOCK_NAME, cs2.NAME AS CUT_NAME
                                         FROM SETUP_DETAILS sd
+                                        LEFT JOIN TASK_TEMPLATE t ON sd.TASK_ID = t.ID
                                         LEFT JOIN COMPONENTS cs1 ON sd.MODEL_STOCK = cs1.ID
                                         LEFT JOIN COMPONENTS cs2 ON sd.MODEL_CUT = cs2.ID");
 
@@ -155,7 +169,7 @@ if (isset($_GET['edit_id'])) {
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr>
                                 <td>" . $row["ID"] . "</td>
-                                <td>" . $row["TASK_ID"] . "</td>
+                                <td>" . $row["TASK_NAME"] . "</td>
                                 <td>" . $row["STOCK_NAME"] . "</td>
                                 <td>" . $row["CUT_NAME"] . "</td>
                                 <td>" . $row["NOTES"] . "</td>
