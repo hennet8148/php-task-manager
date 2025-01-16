@@ -5,25 +5,28 @@ body {
     padding: 0;
     background-color: #f8f9fa; /* Light gray background */
     color: #343a40; /* Dark gray text */
+    font-size: 14px; /* Slightly smaller base font size */
 }
 
 header, footer {
     background-color: #0056b3; /* Blue background */
     color: white;
     text-align: center;
-    padding: 10px 0;
+    padding: 8px 0; /* Reduced padding */
+    font-size: 14px; /* Smaller font size */
 }
 
 nav {
     background-color: #0069d9; /* Lighter blue */
-    padding: 10px;
+    padding: 8px; /* Reduced padding */
     text-align: center;
+    font-size: 13px; /* Smaller font for navigation links */
 }
 
 nav a {
     color: white;
     text-decoration: none;
-    margin: 0 10px;
+    margin: 0 8px; /* Closer spacing between links */
     font-weight: bold;
 }
 
@@ -32,25 +35,27 @@ nav a:hover {
 }
 
 main {
-    padding: 20px;
+    padding: 15px; /* Reduced padding for main content */
 }
 
 form {
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 15px;
+    max-width: 500px; /* Slightly smaller form width */
+    margin: 15px auto; /* Reduced margin */
+    padding: 10px; /* Reduced padding */
     border: 1px solid #ccc;
     background-color: white;
-    border-radius: 5px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for a cleaner look */
 }
 
 input, select, textarea, button {
     display: block;
     width: 100%;
-    margin: 10px 0;
-    padding: 10px;
-    border-radius: 4px;
+    margin: 8px 0; /* Reduced margin */
+    padding: 8px; /* Reduced padding */
+    border-radius: 3px; /* Slightly sharper corners */
     border: 1px solid #ccc;
+    font-size: 14px; /* Smaller font size for inputs */
 }
 
 button {
@@ -58,8 +63,41 @@ button {
     color: white;
     cursor: pointer;
     border: none;
+    padding: 10px; /* Slightly smaller padding */
+    font-size: 14px; /* Matching font size */
+    border-radius: 3px; /* Consistent corner radius */
 }
 
 button:hover {
     background-color: #004494;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0; /* Reduced margin */
+    font-size: 13px; /* Smaller font size */
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 8px; /* Reduced padding */
+    text-align: left;
+}
+
+table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.success {
+    color: #28a745; /* Bootstrap green */
+    font-size: 13px; /* Smaller font size */
+    margin: 10px 0;
+}
+
+.error {
+    color: #dc3545; /* Bootstrap red */
+    font-size: 13px; /* Smaller font size */
+    margin: 10px 0;
 }
