@@ -15,7 +15,7 @@
 
         main {
             margin: 20px auto;
-            max-width: 90%;
+            max-width: 95%;
         }
 
         h2 {
@@ -28,15 +28,15 @@
             background: white;
             border: 1px solid #ddd;
             border-radius: 5px;
-            padding: 15px;
+            padding: 20px;
             margin-bottom: 20px;
-            max-width: 800px;
-            margin: 0 auto 20px;
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
         form label {
-            display: block;
-            margin: 10px 0 5px;
             font-weight: bold;
         }
 
@@ -45,7 +45,6 @@
         form button {
             width: 100%;
             padding: 10px;
-            margin-bottom: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
         }
@@ -55,6 +54,8 @@
             color: white;
             cursor: pointer;
             border: none;
+            font-size: 16px;
+            padding: 10px 20px;
         }
 
         form button:hover {
@@ -64,12 +65,13 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin-top: 20px;
+            font-size: 14px;
         }
 
         table th, table td {
             text-align: left;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ddd;
         }
 
@@ -77,29 +79,30 @@
             background-color: #f4f4f4;
             color: #333;
             text-transform: uppercase;
-            font-size: 12px;
+            font-size: 14px;
         }
 
         table td textarea {
             width: 100%;
-            height: 50px;
+            height: 70px;
+            font-size: 14px;
         }
 
         table td input[type="checkbox"] {
-            transform: scale(1.2);
-            margin-left: 10px;
+            transform: scale(1.5);
+            margin: 5px;
         }
 
         button[type="submit"] {
             margin: 20px auto;
             display: block;
-            padding: 10px 20px;
+            padding: 15px 25px;
             background-color: #28a745;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
         }
 
         button[type="submit"]:hover {
