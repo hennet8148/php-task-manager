@@ -18,19 +18,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $text_color = $conn->real_escape_string($_POST['text_color']);
 
     // Update settings in the database
-    $conn->query("UPDATE site_settings SET setting_value = '$theme' WHERE setting_name = 'theme'");
-    $conn->query("UPDATE site_settings SET setting_value = '$primary_color' WHERE setting_name = 'primary_color'");
-    $conn->query("UPDATE site_settings SET setting_value = '$background_color' WHERE setting_name = 'background_color'");
-    $conn->query("UPDATE site_settings SET setting_value = '$text_color' WHERE setting_name = 'text_color'");
+    $update_queries = [
+        "UPDATE site_settings SET setting_value = '$theme' WHERE setting_name = 'theme'",
+        "UPDATE site_settings SET setting_value = '$primary_color' WHERE setting_name = 'primary_color'",
+        "UPDATE site_settings SET setting_value = '$background_color' WHERE setting_name = 'background_color'",
+        "UPDATE site_settings SET setting_value = '$text_color' WHERE setting_name = 'text_color'"
+    ];
 
-    echo "<div class='success'>Settings updated successfully!</div>";
+    $errors = [];
+    foreach ($update_queries as $query) {
+        if (!$conn->query($query)) {
+            $errors[] = "Error updating: " . $conn->error;
+        }
+    }
+
+    if (empty($errors)) {
+        echo "<div class='success'>Settings updated successfully!</div>";
+    } else {
+        echo "<div class='error'>" . implode('<br>', $errors) . "</div>";
+    }
 }
 
 // Fetch current settings
-$result = $conn->query("SELECT * FROM site_settings");
 $settings = [];
-while ($row = $result->fetch_assoc()) {
-    $settings[$row['setting_name']] = $row['setting_value'];
+$result = $conn->query("SELECT * FROM site_settings");
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $settings[$row['setting_name']] = $row['setting_value'];
+    }
+} else {
+    die("Error fetching settings: " . $conn->error);
 }
 ?>
 
@@ -66,7 +83,6 @@ while ($row = $result->fetch_assoc()) {
                 <option value="#00ff00" style="background-color: #00ff00; color: black;">Green</option>
                 <option value="#0000ff" style="background-color: #0000ff; color: white;">Dark Blue</option>
                 <option value="#ffff00" style="background-color: #ffff00; color: black;">Yellow</option>
-                <!-- Add more colors here -->
             </select>
             <input type="text" id="primary_color" name="primary_color" value="<?php echo $settings['primary_color']; ?>" readonly>
 
@@ -76,7 +92,6 @@ while ($row = $result->fetch_assoc()) {
                 <option value="#121212" style="background-color: #121212; color: white;">Dark Gray</option>
                 <option value="#ffffff" style="background-color: #ffffff; color: black;">White</option>
                 <option value="#000000" style="background-color: #000000; color: white;">Black</option>
-                <!-- Add more colors here -->
             </select>
             <input type="text" id="background_color" name="background_color" value="<?php echo $settings['background_color']; ?>" readonly>
 
@@ -86,7 +101,6 @@ while ($row = $result->fetch_assoc()) {
                 <option value="#e0e0e0" style="background-color: #e0e0e0; color: black;">Light Gray</option>
                 <option value="#ffffff" style="background-color: #ffffff; color: black;">White</option>
                 <option value="#000000" style="background-color: #000000; color: white;">Black</option>
-                <!-- Add more colors here -->
             </select>
             <input type="text" id="text_color" name="text_color" value="<?php echo $settings['text_color']; ?>" readonly>
 
