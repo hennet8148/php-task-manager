@@ -61,4 +61,37 @@ main {
     padding: 15px;
 }
 
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 14px;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+table th {
+    background-color: <?= $settings['primary_color'] ?>;
+    color: white;
+    font-weight: bold;
+}
+
+table tr:nth-child(odd) {
+    background-color: <?= $settings['background_color'] ?>;
+}
+
+table tr:nth-child(even) {
+    background-color: #f2f2f2; /* Light gray for alternating rows */
+}
+
+/* Hover effect for table rows */
+table tr:hover {
+    background-color: <?= $settings['hover_color'] ?? '#ddd' ?>;
+}
+
 /* Add additional styles as needed */
