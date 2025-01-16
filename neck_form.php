@@ -19,8 +19,8 @@ $notes = "";
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $neck_id = $_POST['neck_id'];
-    $neck_name = $_POST['neck_name'];
-    $notes = $_POST['notes'];
+    $neck_name = $conn->real_escape_string($_POST['neck_name']);
+    $notes = $conn->real_escape_string($_POST['notes']);
 
     if (!empty($neck_id)) {
         // Update the row
@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 // Handle delete request
 if (isset($_GET['delete_id'])) {
-    $delete_id = $_GET['delete_id'];
+    $delete_id = intval($_GET['delete_id']);
     $delete_query = "DELETE FROM NECK WHERE ID = $delete_id";
     if ($conn->query($delete_query) === TRUE) {
         echo "<div class='success'>Neck deleted successfully!</div>";
@@ -54,7 +54,7 @@ if (isset($_GET['delete_id'])) {
 
 // Handle edit request
 if (isset($_GET['edit_id'])) {
-    $edit_id = $_GET['edit_id'];
+    $edit_id = intval($_GET['edit_id']);
     $edit_query = "SELECT * FROM NECK WHERE ID = $edit_id";
     $edit_result = $conn->query($edit_query);
     if ($edit_result->num_rows > 0) {
@@ -80,12 +80,12 @@ if (isset($_GET['edit_id'])) {
     <main>
         <h2><?php echo empty($neck_id) ? "Add a New Neck" : "Edit Neck"; ?></h2>
         <form method="post" action="">
-            <input type="hidden" name="neck_id" value="<?php echo $neck_id; ?>">
+            <input type="hidden" name="neck_id" value="<?php echo htmlspecialchars($neck_id); ?>">
             <label for="neck_name">Neck Name:</label>
-            <input type="text" id="neck_name" name="neck_name" value="<?php echo $neck_name; ?>" required>
+            <input type="text" id="neck_name" name="neck_name" value="<?php echo htmlspecialchars($neck_name); ?>" required>
 
             <label for="notes">Notes:</label>
-            <textarea id="notes" name="notes"><?php echo $notes; ?></textarea>
+            <textarea id="notes" name="notes"><?php echo htmlspecialchars($notes); ?></textarea>
 
             <button type="submit"><?php echo empty($neck_id) ? "Submit" : "Update"; ?></button>
         </form>
@@ -113,14 +113,14 @@ if (isset($_GET['edit_id'])) {
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr>
-                                <td>" . $row["ID"] . "</td>
-                                <td>" . $row["NECK_NAME"] . "</td>
-                                <td>" . $row["NOTES"] . "</td>
-                                <td>" . $row["CREATED_AT"] . "</td>
-                                <td>" . $row["UPDATED_AT"] . "</td>
+                                <td>" . htmlspecialchars($row["ID"]) . "</td>
+                                <td>" . htmlspecialchars($row["NECK_NAME"]) . "</td>
+                                <td>" . htmlspecialchars($row["NOTES"]) . "</td>
+                                <td>" . htmlspecialchars($row["CREATED_AT"]) . "</td>
+                                <td>" . htmlspecialchars($row["UPDATED_AT"]) . "</td>
                                 <td>
-                                    <a href='?edit_id=" . $row["ID"] . "'>Edit</a> |
-                                    <a href='?delete_id=" . $row["ID"] . "' onclick=\"return confirm('Are you sure you want to delete this neck?');\">Delete</a>
+                                    <a href='?edit_id=" . htmlspecialchars($row["ID"]) . "'>Edit</a> |
+                                    <a href='?delete_id=" . htmlspecialchars($row["ID"]) . "' onclick=\"return confirm('Are you sure you want to delete this neck?');\">Delete</a>
                                 </td>
                               </tr>";
                     }
