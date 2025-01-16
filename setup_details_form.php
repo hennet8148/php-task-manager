@@ -26,13 +26,20 @@ $model_stock = "";
 $model_cut = "";
 $notes = "";
 
+// Fetch components for dropdowns
+$components_result = $conn->query("SELECT ID, NAME FROM COMPONENTS ORDER BY NAME");
+$components = [];
+while ($row = $components_result->fetch_assoc()) {
+    $components[$row['ID']] = $row['NAME'];
+}
+
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $setup_id = $_POST['setup_id'];
     $task_id = $_POST['task_id'];
     $model_stock = $_POST['model_stock'];
     $model_cut = $_POST['model_cut'];
-    $notes = $_POST['notes'];
+    $notes = $conn->real_escape_string($_POST['notes']);
 
     if (!empty($setup_id)) {
         // Update the row
@@ -102,10 +109,20 @@ if (isset($_GET['edit_id'])) {
             <input type="text" id="task_id" name="task_id" value="<?php echo $task_id; ?>" required>
 
             <label for="model_stock">Model Stock:</label>
-            <input type="text" id="model_stock" name="model_stock" value="<?php echo $model_stock; ?>" required>
+            <select id="model_stock" name="model_stock" required>
+                <option value="">-- Select Model Stock --</option>
+                <?php foreach ($components as $id => $name): ?>
+                    <option value="<?php echo $id; ?>" <?php echo $model_stock == $id ? 'selected' : ''; ?>><?php echo $name; ?></option>
+                <?php endforeach; ?>
+            </select>
 
             <label for="model_cut">Model Cut:</label>
-            <input type="text" id="model_cut" name="model_cut" value="<?php echo $model_cut; ?>" required>
+            <select id="model_cut" name="model_cut" required>
+                <option value="">-- Select Model Cut --</option>
+                <?php foreach ($components as $id => $name): ?>
+                    <option value="<?php echo $id; ?>" <?php echo $model_cut == $id ? 'selected' : ''; ?>><?php echo $name; ?></option>
+                <?php endforeach; ?>
+            </select>
 
             <label for="notes">Notes:</label>
             <textarea id="notes" name="notes"><?php echo $notes; ?></textarea>
@@ -129,15 +146,18 @@ if (isset($_GET['edit_id'])) {
             </thead>
             <tbody>
                 <?php
-                $result = $conn->query("SELECT * FROM SETUP_DETAILS");
+                $result = $conn->query("SELECT sd.*, cs1.NAME AS STOCK_NAME, cs2.NAME AS CUT_NAME
+                                        FROM SETUP_DETAILS sd
+                                        LEFT JOIN COMPONENTS cs1 ON sd.MODEL_STOCK = cs1.ID
+                                        LEFT JOIN COMPONENTS cs2 ON sd.MODEL_CUT = cs2.ID");
 
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr>
                                 <td>" . $row["ID"] . "</td>
                                 <td>" . $row["TASK_ID"] . "</td>
-                                <td>" . $row["MODEL_STOCK"] . "</td>
-                                <td>" . $row["MODEL_CUT"] . "</td>
+                                <td>" . $row["STOCK_NAME"] . "</td>
+                                <td>" . $row["CUT_NAME"] . "</td>
                                 <td>" . $row["NOTES"] . "</td>
                                 <td>" . $row["CREATED_AT"] . "</td>
                                 <td>" . $row["UPDATED_AT"] . "</td>
