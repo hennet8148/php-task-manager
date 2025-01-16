@@ -26,36 +26,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Verify the password
         if (password_verify($password, $row['PASSWORD_HASH'])) {
+            // Set session variables
             $_SESSION['user_id'] = $row['ID'];
             $_SESSION['username'] = $row['USERNAME'];
             $_SESSION['role'] = $row['ROLE'];
 
-            echo "Login successful! Redirecting...";
-            header("Location: protected_page.php");
+            // Redirect to the desired page
+            header("Location: task_template_form.php");
             exit;
         } else {
-            echo "Invalid password.";
+            echo "<div class='error'>Invalid password.</div>";
         }
     } else {
-        echo "User not found.";
+        echo "<div class='error'>User not found.</div>";
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <form method="post" action="">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <br>
-        <button type="submit">Login</button>
-    </form>
+    <main>
+        <h2>Login</h2>
+        <form method="post" action="">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <br>
+            <button type="submit">Login</button>
+        </form>
+    </main>
 </body>
 </html>
