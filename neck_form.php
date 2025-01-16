@@ -80,7 +80,7 @@ if (isset($_GET['edit_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NECK Table Form</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.php">
 </head>
 <body>
     <?php include 'navbar.php'; ?>

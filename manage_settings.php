@@ -57,7 +57,7 @@ if ($result) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Settings</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.php">
     <script>
         // Function to update the hex input box based on dropdown selection
         function updateColorInput(selectElement, inputId) {
