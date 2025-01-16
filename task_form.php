@@ -1,59 +1,3 @@
-<?php
-// Database connection
-$servername = "localhost";
-$username = "CHUCK";
-$password = "Jack.BOX.1234";
-$dbname = "NECK";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Initialize variables
-$neck_id = "";
-$tasks = [];
-
-// Handle neck ID submission
-if (isset($_POST['filter_neck'])) {
-    $neck_id = intval($_POST['neck_id']);
-
-    // Fetch tasks for the given NECK_ID
-    $task_query = "SELECT * FROM TASK WHERE NECK_ID = $neck_id ORDER BY SORT_ORDER";
-    $result = $conn->query($task_query);
-
-    if ($result && $result->num_rows > 0) {
-        $tasks = $result->fetch_all(MYSQLI_ASSOC);
-    } else {
-        echo "<div class='error'>No tasks found for Neck ID $neck_id</div>";
-    }
-}
-
-// Handle update form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_tasks'])) {
-    foreach ($_POST['tasks'] as $task_id => $task_data) {
-        $notes = $conn->real_escape_string($task_data['notes']);
-        $complete = isset($task_data['complete']) ? 1 : 0;
-
-        $update_query = "UPDATE TASK SET NOTES = '$notes', COMPLETE = $complete WHERE ID = $task_id";
-        if ($conn->query($update_query) !== TRUE) {
-            echo "<div class='error'>Error updating task ID $task_id: " . $conn->error . "</div>";
-        }
-    }
-    echo "<div class='success'>Tasks updated successfully!</div>";
-
-    // Refresh the tasks list
-    if (!empty($neck_id)) {
-        $task_query = "SELECT * FROM TASK WHERE NECK_ID = $neck_id ORDER BY SORT_ORDER";
-        $result = $conn->query($task_query);
-        if ($result && $result->num_rows > 0) {
-            $tasks = $result->fetch_all(MYSQLI_ASSOC);
-        }
-    }
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,6 +5,119 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_tasks'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Management</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        main {
+            margin: 20px auto;
+            max-width: 90%;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        form {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            max-width: 800px;
+            margin: 0 auto 20px;
+        }
+
+        form label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        form input[type="number"],
+        form textarea,
+        form button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        form button {
+            background-color: #0056b3;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        form button:hover {
+            background-color: #004494;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th, table td {
+            text-align: left;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f4f4f4;
+            color: #333;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+
+        table td textarea {
+            width: 100%;
+            height: 50px;
+        }
+
+        table td input[type="checkbox"] {
+            transform: scale(1.2);
+            margin-left: 10px;
+        }
+
+        button[type="submit"] {
+            margin: 20px auto;
+            display: block;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #218838;
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .success {
+            color: green;
+            text-align: center;
+            margin: 10px 0;
+        }
+    </style>
 </head>
 <body>
     <?php include 'navbar.php'; ?>
