@@ -67,146 +67,71 @@ if (isset($_GET['edit_id'])) {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NECK Table Form</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 0;
-            background-color: #f4f4f9;
-        }
-
-        h2 {
-            color: #333;
-        }
-
-        form {
-            background: #fff;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            max-width: 500px;
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin: 10px 0 5px;
-        }
-
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-bottom: 15px;
-        }
-
-        input[type="submit"] {
-            background-color: #5cb85c;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #4cae4c;
-        }
-
-        .success {
-            color: green;
-            margin: 10px 0;
-        }
-
-        .error {
-            color: red;
-            margin: 10px 0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        table th, table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        table th {
-            background-color: #f4f4f4;
-        }
-
-        .links {
-            margin-top: 10px;
-        }
-
-        .links a {
-            text-decoration: none;
-            color: #007bff;
-            margin-right: 15px;
-        }
-
-        .links a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h2><?php echo empty($neck_id) ? "Add a New Neck" : "Edit Neck"; ?></h2>
-    <form method="post" action="">
-        <input type="hidden" name="neck_id" value="<?php echo $neck_id; ?>">
-        <label for="neck_name">Neck Name:</label>
-        <input type="text" id="neck_name" name="neck_name" value="<?php echo $neck_name; ?>" required>
+    <?php include 'navbar.php'; ?>
 
-        <label for="notes">Notes:</label>
-        <textarea id="notes" name="notes"><?php echo $notes; ?></textarea>
+    <main>
+        <h2><?php echo empty($neck_id) ? "Add a New Neck" : "Edit Neck"; ?></h2>
+        <form method="post" action="">
+            <input type="hidden" name="neck_id" value="<?php echo $neck_id; ?>">
+            <label for="neck_name">Neck Name:</label>
+            <input type="text" id="neck_name" name="neck_name" value="<?php echo $neck_name; ?>" required>
 
-        <input type="submit" value="<?php echo empty($neck_id) ? "Submit" : "Update"; ?>">
-    </form>
+            <label for="notes">Notes:</label>
+            <textarea id="notes" name="notes"><?php echo $notes; ?></textarea>
 
-    <div class="links">
-        <a href="?">Add New Neck</a>
-        <a href="?view=all">View All Necks</a>
-    </div>
+            <button type="submit"><?php echo empty($neck_id) ? "Submit" : "Update"; ?></button>
+        </form>
 
-    <h2>Existing Necks</h2>
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Neck Name</th>
-            <th>Notes</th>
-            <th>Created At</th>
-            <th>Updated At</th>
-            <th>Actions</th>
-        </tr>
-        <?php
-        $result = $conn->query("SELECT * FROM NECK");
+        <div class="links">
+            <a href="?">Add New Neck</a>
+        </div>
 
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                echo "<tr>
-                        <td>" . $row["ID"] . "</td>
-                        <td>" . $row["NECK_NAME"] . "</td>
-                        <td>" . $row["NOTES"] . "</td>
-                        <td>" . $row["CREATED_AT"] . "</td>
-                        <td>" . $row["UPDATED_AT"] . "</td>
-                        <td>
-                            <a href='?edit_id=" . $row["ID"] . "'>Edit</a> |
-                            <a href='?delete_id=" . $row["ID"] . "' onclick=\"return confirm('Are you sure you want to delete this neck?');\">Delete</a>
-                        </td>
-                      </tr>";
-            }
-        } else {
-            echo "<tr><td colspan='6'>No necks found</td></tr>";
-        }
-        ?>
-    </table>
+        <h2>Existing Necks</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Neck Name</th>
+                    <th>Notes</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $result = $conn->query("SELECT * FROM NECK");
+
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo "<tr>
+                                <td>" . $row["ID"] . "</td>
+                                <td>" . $row["NECK_NAME"] . "</td>
+                                <td>" . $row["NOTES"] . "</td>
+                                <td>" . $row["CREATED_AT"] . "</td>
+                                <td>" . $row["UPDATED_AT"] . "</td>
+                                <td>
+                                    <a href='?edit_id=" . $row["ID"] . "'>Edit</a> |
+                                    <a href='?delete_id=" . $row["ID"] . "' onclick=\"return confirm('Are you sure you want to delete this neck?');\">Delete</a>
+                                </td>
+                              </tr>";
+                    }
+                } else {
+                    echo "<tr><td colspan='6'>No necks found</td></tr>";
+                }
+                ?>
+            </tbody>
+        </table>
+    </main>
+
+    <?php include 'footer.php'; ?>
 </body>
 </html>
