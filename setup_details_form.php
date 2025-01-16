@@ -206,7 +206,7 @@ if (isset($_GET['edit_id'])) {
                               </tr>";
                     }
                 } else {
-                    echo "<tr><td colspan='9'>No stetup details found</td></tr>";
+                    echo "<tr><td colspan='9'>No setup details found</td></tr>";
                 }
                 ?>
             </tbody>
