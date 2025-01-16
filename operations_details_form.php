@@ -1,4 +1,12 @@
 <?php
+session_start();
+
+// Redirect to login if the user is not logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
 // Database connection
 $servername = "localhost";
 $username = "CHUCK";
@@ -24,11 +32,11 @@ $notes = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $operation_id = $_POST['operation_id'];
     $task_id = $_POST['task_id'];
-    $operation_type = $_POST['operation_type'];
-    $speed = $_POST['speed'];
-    $feed = $_POST['feed'];
+    $operation_type = $conn->real_escape_string($_POST['operation_type']);
+    $speed = $conn->real_escape_string($_POST['speed']);
+    $feed = $conn->real_escape_string($_POST['feed']);
     $stock_to_leave = isset($_POST['stock_to_leave']) ? 1 : 0;
-    $notes = $_POST['notes'];
+    $notes = $conn->real_escape_string($_POST['notes']);
 
     if (!empty($operation_id)) {
         // Update the row
@@ -55,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 // Handle delete request
 if (isset($_GET['delete_id'])) {
-    $delete_id = $_GET['delete_id'];
+    $delete_id = intval($_GET['delete_id']);
     $delete_query = "DELETE FROM OPERATION_DETAILS WHERE ID = $delete_id";
     if ($conn->query($delete_query) === TRUE) {
         echo "<div class='success'>Operation details deleted successfully!</div>";
@@ -66,7 +74,7 @@ if (isset($_GET['delete_id'])) {
 
 // Handle edit request
 if (isset($_GET['edit_id'])) {
-    $edit_id = $_GET['edit_id'];
+    $edit_id = intval($_GET['edit_id']);
     $edit_query = "SELECT * FROM OPERATION_DETAILS WHERE ID = $edit_id";
     $edit_result = $conn->query($edit_query);
     if ($edit_result->num_rows > 0) {
@@ -96,24 +104,24 @@ if (isset($_GET['edit_id'])) {
     <main>
         <h2><?php echo empty($operation_id) ? "Add New Operation Detail" : "Edit Operation Detail"; ?></h2>
         <form method="post" action="">
-            <input type="hidden" name="operation_id" value="<?php echo $operation_id; ?>">
+            <input type="hidden" name="operation_id" value="<?php echo htmlspecialchars($operation_id); ?>">
             <label for="task_id">Task ID:</label>
-            <input type="text" id="task_id" name="task_id" value="<?php echo $task_id; ?>" required>
+            <input type="text" id="task_id" name="task_id" value="<?php echo htmlspecialchars($task_id); ?>" required>
 
             <label for="operation_type">Operation Type:</label>
-            <input type="text" id="operation_type" name="operation_type" value="<?php echo $operation_type; ?>" required>
+            <input type="text" id="operation_type" name="operation_type" value="<?php echo htmlspecialchars($operation_type); ?>" required>
 
             <label for="speed">Speed:</label>
-            <input type="text" id="speed" name="speed" value="<?php echo $speed; ?>">
+            <input type="text" id="speed" name="speed" value="<?php echo htmlspecialchars($speed); ?>">
 
             <label for="feed">Feed:</label>
-            <input type="text" id="feed" name="feed" value="<?php echo $feed; ?>">
+            <input type="text" id="feed" name="feed" value="<?php echo htmlspecialchars($feed); ?>">
 
             <label for="stock_to_leave">Stock to Leave:</label>
             <input type="checkbox" id="stock_to_leave" name="stock_to_leave" <?php echo $stock_to_leave ? 'checked' : ''; ?>>
 
             <label for="notes">Notes:</label>
-            <textarea id="notes" name="notes"><?php echo $notes; ?></textarea>
+            <textarea id="notes" name="notes"><?php echo htmlspecialchars($notes); ?></textarea>
 
             <button type="submit"><?php echo empty($operation_id) ? "Submit" : "Update"; ?></button>
         </form>
@@ -141,18 +149,18 @@ if (isset($_GET['edit_id'])) {
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr>
-                                <td>" . $row["ID"] . "</td>
-                                <td>" . $row["TASK_ID"] . "</td>
-                                <td>" . $row["OPERATION_TYPE"] . "</td>
-                                <td>" . $row["SPEED"] . "</td>
-                                <td>" . $row["FEED"] . "</td>
+                                <td>" . htmlspecialchars($row["ID"]) . "</td>
+                                <td>" . htmlspecialchars($row["TASK_ID"]) . "</td>
+                                <td>" . htmlspecialchars($row["OPERATION_TYPE"]) . "</td>
+                                <td>" . htmlspecialchars($row["SPEED"]) . "</td>
+                                <td>" . htmlspecialchars($row["FEED"]) . "</td>
                                 <td>" . ($row["STOCK_TO_LEAVE"] ? "Yes" : "No") . "</td>
-                                <td>" . $row["NOTES"] . "</td>
-                                <td>" . $row["CREATED_AT"] . "</td>
-                                <td>" . $row["UPDATED_AT"] . "</td>
+                                <td>" . htmlspecialchars($row["NOTES"]) . "</td>
+                                <td>" . htmlspecialchars($row["CREATED_AT"]) . "</td>
+                                <td>" . htmlspecialchars($row["UPDATED_AT"]) . "</td>
                                 <td>
-                                    <a href='?edit_id=" . $row["ID"] . "'>Edit</a> |
-                                    <a href='?delete_id=" . $row["ID"] . "' onclick=\"return confirm('Are you sure you want to delete this operation detail?');\">Delete</a>
+                                    <a href='?edit_id=" . htmlspecialchars($row["ID"]) . "'>Edit</a> |
+                                    <a href='?delete_id=" . htmlspecialchars($row["ID"]) . "' onclick=\"return confirm('Are you sure you want to delete this operation detail?');\">Delete</a>
                                 </td>
                               </tr>";
                     }
