@@ -4,4 +4,5 @@
     <a href="task_template_form.php">Task Template</a>
     <a href="setup_details_form.php">Setup Details</a>
     <a href="operations_details_form.php">Operations Details</a>
+    <a href="components_management.php">Components Management</a>
 </nav>
