@@ -116,6 +116,7 @@ if (isset($_GET['edit_id'])) {
     <?php include 'navbar.php'; ?>
 
     <main>
+        <!-- Sync Tasks Form -->
         <h2>Sync Tasks</h2>
         <form method="post" action="">
             <label for="neck_id">Enter Neck ID:</label>
@@ -123,6 +124,7 @@ if (isset($_GET['edit_id'])) {
             <button type="submit" name="sync_tasks">Sync Tasks</button>
         </form>
 
+        <!-- Add/Edit Task Template Form -->
         <h2><?php echo empty($template_id) ? "Add a New Task Template" : "Edit Task Template"; ?></h2>
         <form method="post" action="">
             <input type="hidden" name="template_id" value="<?php echo $template_id; ?>">
@@ -150,6 +152,7 @@ if (isset($_GET['edit_id'])) {
             <button type="submit"><?php echo empty($template_id) ? "Submit" : "Update"; ?></button>
         </form>
 
+        <!-- Display Task Templates -->
         <h2>Existing Task Templates</h2>
         <table>
             <thead>
