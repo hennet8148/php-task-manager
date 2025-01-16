@@ -1,15 +1,37 @@
+/* CSS Variables for Customization */
+:root {
+    --primary-color: #0056b3; /* Default primary color */
+    --secondary-color: #0069d9; /* Default secondary color */
+    --background-color: #f8f9fa; /* Default background */
+    --text-color: #343a40; /* Default text color */
+    --header-font: 'Arial', sans-serif; /* Default header font */
+    --body-font: 'Verdana', sans-serif; /* Default body font */
+    --form-width: 500px; /* Form maximum width */
+    --table-font-size: 13px; /* Table font size */
+}
+
+/* Dark Mode Variables */
+body.dark-mode {
+    --primary-color: #333333; /* Dark mode primary color */
+    --secondary-color: #444444; /* Dark mode secondary color */
+    --background-color: #121212; /* Dark mode background */
+    --text-color: #e0e0e0; /* Dark mode text color */
+    --header-font: 'Georgia', serif; /* Dark mode header font */
+    --body-font: 'Courier New', monospace; /* Dark mode body font */
+}
+
 /* Global Styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: var(--body-font);
     margin: 0;
     padding: 0;
-    background-color: #f8f9fa; /* Light gray background */
-    color: #343a40; /* Dark gray text */
+    background-color: var(--background-color);
+    color: var(--text-color);
     font-size: 14px;
 }
 
 header, footer {
-    background-color: #0056b3;
+    background-color: var(--primary-color);
     color: white;
     text-align: center;
     padding: 8px 0;
@@ -17,7 +39,7 @@ header, footer {
 }
 
 nav {
-    background-color: #0069d9;
+    background-color: var(--secondary-color);
     padding: 8px;
     text-align: center;
     font-size: 13px;
@@ -36,10 +58,12 @@ nav a:hover {
 
 main {
     padding: 15px;
+    max-width: 100%;
+    margin: auto;
 }
 
 form {
-    max-width: 500px;
+    max-width: var(--form-width);
     margin: 15px auto;
     padding: 10px;
     border: 1px solid #ccc;
@@ -59,7 +83,7 @@ input, select, textarea, button {
 }
 
 button {
-    background-color: #0056b3;
+    background-color: var(--primary-color);
     color: white;
     cursor: pointer;
     border: none;
@@ -69,14 +93,14 @@ button {
 }
 
 button:hover {
-    background-color: #004494;
+    background-color: var(--secondary-color);
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
     margin: 15px 0;
-    font-size: 13px;
+    font-size: var(--table-font-size);
 }
 
 table th, table td {
@@ -90,6 +114,7 @@ table th {
     font-weight: bold;
 }
 
+/* Feedback Messages */
 .success {
     color: #28a745;
     font-size: 13px;
@@ -102,65 +127,10 @@ table th {
     margin: 10px 0;
 }
 
-/* Dark Mode */
-@media (prefers-color-scheme: dark) {
-    body {
-        background-color: #121212; /* Dark background */
-        color: #e0e0e0; /* Light text color */
-    }
-
-    header, footer {
-        background-color: #1f1f1f; /* Darker header/footer */
-        color: #e0e0e0;
-    }
-
-    nav {
-        background-color: #333333; /* Darker navigation */
-    }
-
-    form {
-        background-color: #1f1f1f; /* Dark form background */
-        border: 1px solid #444; /* Darker border */
-    }
-
-    input, select, textarea, button {
-        background-color: #2c2c2c; /* Darker input background */
-        color: #e0e0e0; /* Light text */
-        border: 1px solid #444; /* Darker border */
-    }
-
-    button {
-        background-color: #444; /* Darker button */
-        color: #e0e0e0;
-    }
-
-    button:hover {
-        background-color: #555; /* Slightly lighter hover */
-    }
-
-    table th {
-        background-color: #333; /* Darker table header */
-        color: #e0e0e0;
-    }
-
-    table td {
-        background-color: #1f1f1f; /* Darker table cells */
-        color: #e0e0e0;
-    }
-
-    .success {
-        color: #81c784; /* Muted green */
-    }
-
-    .error {
-        color: #e57373; /* Muted red */
-    }
-}
-
-/* Responsive Styles */
+/* Responsive Design */
 @media (max-width: 768px) {
-    main {
-        padding: 10px;
+    body {
+        font-size: 12px;
     }
 
     form {
@@ -170,16 +140,55 @@ table th {
     table {
         font-size: 12px;
     }
+}
 
-    table th, table td {
-        padding: 6px;
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: var(--background-color);
+        color: var(--text-color);
     }
 
-    h2 {
-        font-size: 18px;
+    header, footer {
+        background-color: var(--primary-color);
+        color: var(--text-color);
+    }
+
+    nav {
+        background-color: var(--secondary-color);
+    }
+
+    form {
+        background-color: var(--background-color);
+        border: 1px solid var(--primary-color);
     }
 
     input, select, textarea, button {
-        font-size: 13px;
+        background-color: var(--secondary-color);
+        color: var(--text-color);
+        border: 1px solid var(--primary-color);
+    }
+
+    button:hover {
+        background-color: var(--text-color);
+        color: var(--background-color);
+    }
+
+    table th {
+        background-color: var(--secondary-color);
+        color: var(--text-color);
+    }
+
+    table td {
+        background-color: var(--background-color);
+        color: var(--text-color);
+    }
+
+    .success {
+        color: #81c784;
+    }
+
+    .error {
+        color: #e57373;
     }
 }
