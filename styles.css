@@ -1,37 +1,38 @@
-/* CSS Variables for Customization */
-:root {
-    --primary-color: #0056b3; /* Default primary color */
-    --secondary-color: #0069d9; /* Default secondary color */
-    --background-color: #f8f9fa; /* Default background */
-    --text-color: #343a40; /* Default text color */
-    --header-font: 'Arial', sans-serif; /* Default header font */
-    --body-font: 'Verdana', sans-serif; /* Default body font */
-    --form-width: 500px; /* Form maximum width */
-    --table-font-size: 13px; /* Table font size */
+<?php
+// Database connection
+$servername = "localhost";
+$username = "CHUCK";
+$password = "Jack.BOX.1234";
+$dbname = "NECK";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 
-/* Dark Mode Variables */
-body.dark-mode {
-    --primary-color: #333333; /* Dark mode primary color */
-    --secondary-color: #444444; /* Dark mode secondary color */
-    --background-color: #121212; /* Dark mode background */
-    --text-color: #e0e0e0; /* Dark mode text color */
-    --header-font: 'Georgia', serif; /* Dark mode header font */
-    --body-font: 'Courier New', monospace; /* Dark mode body font */
+// Fetch current settings
+$settings = [];
+$result = $conn->query("SELECT * FROM site_settings");
+while ($row = $result->fetch_assoc()) {
+    $settings[$row['setting_name']] = $row['setting_value'];
 }
+
+// Output CSS
+header("Content-Type: text/css");
+?>
 
 /* Global Styles */
 body {
-    font-family: var(--body-font);
+    font-family: <?= $settings['body_font'] ?>;
     margin: 0;
     padding: 0;
-    background-color: var(--background-color);
-    color: var(--text-color);
+    background-color: <?= $settings['background_color'] ?>;
+    color: <?= $settings['text_color'] ?>;
     font-size: 14px;
 }
 
 header, footer {
-    background-color: var(--primary-color);
+    background-color: <?= $settings['primary_color'] ?>;
     color: white;
     text-align: center;
     padding: 8px 0;
@@ -39,7 +40,7 @@ header, footer {
 }
 
 nav {
-    background-color: var(--secondary-color);
+    background-color: <?= $settings['secondary_color'] ?>;
     padding: 8px;
     text-align: center;
     font-size: 13px;
@@ -58,12 +59,10 @@ nav a:hover {
 
 main {
     padding: 15px;
-    max-width: 100%;
-    margin: auto;
 }
 
 form {
-    max-width: var(--form-width);
+    max-width: <?= $settings['form_width'] ?>;
     margin: 15px auto;
     padding: 10px;
     border: 1px solid #ccc;
@@ -72,123 +71,4 @@ form {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-input, select, textarea, button {
-    display: block;
-    width: 100%;
-    margin: 8px 0;
-    padding: 8px;
-    border-radius: 3px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-}
-
-button {
-    background-color: var(--primary-color);
-    color: white;
-    cursor: pointer;
-    border: none;
-    padding: 10px;
-    font-size: 14px;
-    border-radius: 3px;
-}
-
-button:hover {
-    background-color: var(--secondary-color);
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 15px 0;
-    font-size: var(--table-font-size);
-}
-
-table th, table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-table th {
-    background-color: #f4f4f4;
-    font-weight: bold;
-}
-
-/* Feedback Messages */
-.success {
-    color: #28a745;
-    font-size: 13px;
-    margin: 10px 0;
-}
-
-.error {
-    color: #dc3545;
-    font-size: 13px;
-    margin: 10px 0;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    body {
-        font-size: 12px;
-    }
-
-    form {
-        max-width: 90%;
-    }
-
-    table {
-        font-size: 12px;
-    }
-}
-
-/* Dark Mode */
-@media (prefers-color-scheme: dark) {
-    body {
-        background-color: var(--background-color);
-        color: var(--text-color);
-    }
-
-    header, footer {
-        background-color: var(--primary-color);
-        color: var(--text-color);
-    }
-
-    nav {
-        background-color: var(--secondary-color);
-    }
-
-    form {
-        background-color: var(--background-color);
-        border: 1px solid var(--primary-color);
-    }
-
-    input, select, textarea, button {
-        background-color: var(--secondary-color);
-        color: var(--text-color);
-        border: 1px solid var(--primary-color);
-    }
-
-    button:hover {
-        background-color: var(--text-color);
-        color: var(--background-color);
-    }
-
-    table th {
-        background-color: var(--secondary-color);
-        color: var(--text-color);
-    }
-
-    table td {
-        background-color: var(--background-color);
-        color: var(--text-color);
-    }
-
-    .success {
-        color: #81c784;
-    }
-
-    .error {
-        color: #e57373;
-    }
-}
+/* Other styles using dynamic settings */
