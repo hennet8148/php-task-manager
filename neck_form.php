@@ -5,7 +5,6 @@ $username = "CHUCK";
 $password = "Jack.BOX.1234";
 $dbname = "NECK";
 
-Copyright (c)2015 Copyright Holder All Rights Reserved.
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
