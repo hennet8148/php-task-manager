@@ -1,11 +1,9 @@
 <?php
 // Database connection
-// Database connection
 $servername = "localhost";
 $username = "CHUCK";
 $password = "Jack.BOX.1234";
 $dbname = "NECK";
-
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -30,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (!empty($setup_id)) {
         // Update the row
-        $update_query = "UPDATE SETUP_DETAILS 
+        $update_query = "UPDATE SETUP_DETAILS
                          SET TASK_ID = '$task_id', MODEL_STOCK = '$model_stock', MODEL_CUT = '$model_cut', NOTES = '$notes'
                          WHERE ID = $setup_id";
         if ($conn->query($update_query) === TRUE) {
@@ -40,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     } else {
         // Insert a new row
-        $insert_query = "INSERT INTO SETUP_DETAILS (TASK_ID, MODEL_STOCK, MODEL_CUT, NOTES) 
+        $insert_query = "INSERT INTO SETUP_DETAILS (TASK_ID, MODEL_STOCK, MODEL_CUT, NOTES)
                          VALUES ('$task_id', '$model_stock', '$model_cut', '$notes')";
         if ($conn->query($insert_query) === TRUE) {
             echo "<div class='success'>New setup details added successfully!</div>";
@@ -78,159 +76,77 @@ if (isset($_GET['edit_id'])) {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Setup Details Management</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 0;
-            background-color: #f4f4f9;
-        }
-
-        h2 {
-            color: #333;
-        }
-
-        form {
-            background: #fff;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            max-width: 500px;
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin: 10px 0 5px;
-        }
-
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-bottom: 15px;
-        }
-
-        input[type="submit"] {
-            background-color: #5cb85c;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #4cae4c;
-        }
-
-        .success {
-            color: green;
-            margin: 10px 0;
-        }
-
-        .error {
-            color: red;
-            margin: 10px 0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        table th, table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        table th {
-            background-color: #f4f4f4;
-        }
-
-        .links {
-            margin-top: 10px;
-        }
-
-        .links a {
-            text-decoration: none;
-            color: #007bff;
-            margin-right: 15px;
-        }
-
-        .links a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h2><?php echo empty($setup_id) ? "Add a New Setup Detail" : "Edit Setup Detail"; ?></h2>
-    <form method="post" action="">
-        <input type="hidden" name="setup_id" value="<?php echo $setup_id; ?>">
-        <label for="task_id">Task ID:</label>
-        <input type="text" id="task_id" name="task_id" value="<?php echo $task_id; ?>" required>
+    <?php include 'navbar.php'; ?>
 
-        <label for="model_stock">Model Stock:</label>
-        <input type="text" id="model_stock" name="model_stock" value="<?php echo $model_stock; ?>" required>
+    <main>
+        <h2><?php echo empty($setup_id) ? "Add a New Setup Detail" : "Edit Setup Detail"; ?></h2>
+        <form method="post" action="">
+            <input type="hidden" name="setup_id" value="<?php echo $setup_id; ?>">
+            <label for="task_id">Task ID:</label>
+            <input type="text" id="task_id" name="task_id" value="<?php echo $task_id; ?>" required>
 
-        <label for="model_cut">Model Cut:</label>
-        <input type="text" id="model_cut" name="model_cut" value="<?php echo $model_cut; ?>" required>
+            <label for="model_stock">Model Stock:</label>
+            <input type="text" id="model_stock" name="model_stock" value="<?php echo $model_stock; ?>" required>
 
-        <label for="notes">Notes:</label>
-        <textarea id="notes" name="notes"><?php echo $notes; ?></textarea>
+            <label for="model_cut">Model Cut:</label>
+            <input type="text" id="model_cut" name="model_cut" value="<?php echo $model_cut; ?>" required>
 
-        <input type="submit" value="<?php echo empty($setup_id) ? "Submit" : "Update"; ?>">
-    </form>
+            <label for="notes">Notes:</label>
+            <textarea id="notes" name="notes"><?php echo $notes; ?></textarea>
 
-    <div class="links">
-        <a href="?">Add New Setup Detail</a>
-        <a href="?view=all">View All Setup Details</a>
-        <a href="task_template_form.php">Manage Task Templates</a>
-        <a href="neck_form.php">Manage Necks</a>
-    </div>
+            <button type="submit"><?php echo empty($setup_id) ? "Submit" : "Update"; ?></button>
+        </form>
 
-    <h2>Existing Setup Details</h2>
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Task ID</th>
-            <th>Model Stock</th>
-            <th>Model Cut</th>
-            <th>Notes</th>
-            <th>Created At</th>
-            <th>Updated At</th>
-            <th>Actions</th>
-        </tr>
-        <?php
-        $result = $conn->query("SELECT * FROM SETUP_DETAILS");
+        <h2>Existing Setup Details</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Task ID</th>
+                    <th>Model Stock</th>
+                    <th>Model Cut</th>
+                    <th>Notes</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $result = $conn->query("SELECT * FROM SETUP_DETAILS");
 
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                echo "<tr>
-                        <td>" . $row["ID"] . "</td>
-                        <td>" . $row["TASK_ID"] . "</td>
-                        <td>" . $row["MODEL_STOCK"] . "</td>
-                        <td>" . $row["MODEL_CUT"] . "</td>
-                        <td>" . $row["NOTES"] . "</td>
-                        <td>" . $row["CREATED_AT"] . "</td>
-                        <td>" . $row["UPDATED_AT"] . "</td>
-                        <td>
-                            <a href='?edit_id=" . $row["ID"] . "'>Edit</a> |
-                            <a href='?delete_id=" . $row["ID"] . "' onclick=\"return confirm('Are you sure you want to delete this setup detail?');\">Delete</a>
-                        </td>
-                      </tr>";
-            }
-        } else {
-            echo "<tr><td colspan='8'>No setup details found</td></tr>";
-        }
-        ?>
-    </table>
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo "<tr>
+                                <td>" . $row["ID"] . "</td>
+                                <td>" . $row["TASK_ID"] . "</td>
+                                <td>" . $row["MODEL_STOCK"] . "</td>
+                                <td>" . $row["MODEL_CUT"] . "</td>
+                                <td>" . $row["NOTES"] . "</td>
+                                <td>" . $row["CREATED_AT"] . "</td>
+                                <td>" . $row["UPDATED_AT"] . "</td>
+                                <td>
+                                    <a href='?edit_id=" . $row["ID"] . "'>Edit</a> |
+                                    <a href='?delete_id=" . $row["ID"] . "' onclick=\"return confirm('Are you sure you want to delete this setup detail?');\">Delete</a>
+                                </td>
+                              </tr>";
+                    }
+                } else {
+                    echo "<tr><td colspan='8'>No setup details found</td></tr>";
+                }
+                ?>
+            </tbody>
+        </table>
+    </main>
+
+    <?php include 'footer.php'; ?>
 </body>
 </html>
-
