@@ -156,3 +156,30 @@ table th {
         color: #e57373; /* Muted red */
     }
 }
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    main {
+        padding: 10px;
+    }
+
+    form {
+        max-width: 90%;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+    table th, table td {
+        padding: 6px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+
+    input, select, textarea, button {
+        font-size: 13px;
+    }
+}
