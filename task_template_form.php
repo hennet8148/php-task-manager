@@ -19,8 +19,30 @@ $task_type = "";
 $sort_order = "";
 $notes = "";
 
+// Handle sync tasks button
+if (isset($_POST['sync_tasks'])) {
+    $neck_id = intval($_POST['neck_id']);
+
+    if ($neck_id > 0) {
+        $sync_query = "
+            INSERT INTO TASK (NECK_ID, TASK_TEMPLATE_ID, TASK_NAME, TASK_TYPE, SORT_ORDER, NOTES, STATUS, COMPLETE)
+            SELECT $neck_id, t.ID, t.TASK_NAME, t.TASK_TYPE, t.SORT_ORDER, t.NOTES, 'Pending', 0
+            FROM TASK_TEMPLATE t
+            LEFT JOIN TASK tk ON t.ID = tk.TASK_TEMPLATE_ID AND tk.NECK_ID = $neck_id
+            WHERE tk.ID IS NULL;
+        ";
+        if ($conn->query($sync_query) === TRUE) {
+            echo "<div class='success'>Tasks synchronized successfully for Neck ID $neck_id!</div>";
+        } else {
+            echo "<div class='error'>Error: " . $conn->error . "</div>";
+        }
+    } else {
+        echo "<div class='error'>Invalid Neck ID!</div>";
+    }
+}
+
 // Handle form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['sync_tasks'])) {
     $template_id = $_POST['template_id'];
     $parent_id = $_POST['parent_id'];
     $task_name = $_POST['task_name'];
@@ -94,6 +116,13 @@ if (isset($_GET['edit_id'])) {
     <?php include 'navbar.php'; ?>
 
     <main>
+        <h2>Sync Tasks</h2>
+        <form method="post" action="">
+            <label for="neck_id">Enter Neck ID:</label>
+            <input type="number" id="neck_id" name="neck_id" required>
+            <button type="submit" name="sync_tasks">Sync Tasks</button>
+        </form>
+
         <h2><?php echo empty($template_id) ? "Add a New Task Template" : "Edit Task Template"; ?></h2>
         <form method="post" action="">
             <input type="hidden" name="template_id" value="<?php echo $template_id; ?>">
