@@ -24,13 +24,25 @@ if (isset($_POST['sync_tasks'])) {
     $neck_id = intval($_POST['neck_id']);
 
     if ($neck_id > 0) {
+        // SQL to synchronize tasks and include PARENT_ID mapping
         $sync_query = "
-            INSERT INTO TASK (NECK_ID, TASK_TEMPLATE_ID, TASK_NAME, TASK_TYPE, SORT_ORDER, NOTES, STATUS, COMPLETE)
-            SELECT $neck_id, t.ID, t.TASK_NAME, t.TASK_TYPE, t.SORT_ORDER, t.NOTES, 'Pending', 0
+            INSERT INTO TASK (NECK_ID, TASK_TEMPLATE_ID, PARENT_ID, TASK_NAME, TASK_TYPE, SORT_ORDER, NOTES, STATUS, COMPLETE)
+            SELECT
+                $neck_id,
+                t.ID,
+                tk.ID AS PARENT_ID,
+                t.TASK_NAME,
+                t.TASK_TYPE,
+                t.SORT_ORDER,
+                t.NOTES,
+                'Pending',
+                0
             FROM TASK_TEMPLATE t
-            LEFT JOIN TASK tk ON t.ID = tk.TASK_TEMPLATE_ID AND tk.NECK_ID = $neck_id
-            WHERE tk.ID IS NULL;
+            LEFT JOIN TASK tk ON t.PARENT_ID = tk.TASK_TEMPLATE_ID AND tk.NECK_ID = $neck_id
+            LEFT JOIN TASK existing ON t.ID = existing.TASK_TEMPLATE_ID AND existing.NECK_ID = $neck_id
+            WHERE existing.ID IS NULL;
         ";
+
         if ($conn->query($sync_query) === TRUE) {
             echo "<div class='success'>Tasks synchronized successfully for Neck ID $neck_id!</div>";
         } else {
@@ -171,9 +183,7 @@ if (isset($_GET['edit_id'])) {
                 $query = "SELECT * FROM TASK_TEMPLATE ORDER BY SORT_ORDER";
                 $result = $conn->query($query);
 
-                if (!$result) {
-                    echo "<tr><td colspan='7'>Error: " . $conn->error . "</td></tr>";
-                } elseif ($result->num_rows > 0) {
+                if ($result && $result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr>
                                 <td>" . $row["ID"] . "</td>
