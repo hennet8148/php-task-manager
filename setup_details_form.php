@@ -26,8 +26,8 @@ $model_stock = "";
 $model_cut = "";
 $notes = "";
 
-// Fetch tasks for dropdown
-$tasks_result = $conn->query("SELECT ID, TASK_NAME FROM TASK_TEMPLATE ORDER BY TASK_NAME");
+// Fetch tasks for dropdown, limited to type 'SETUP'
+$tasks_result = $conn->query("SELECT ID, TASK_NAME FROM TASK_TEMPLATE WHERE TASK_TYPE = 'SETUP' ORDER BY TASK_NAME");
 $tasks = [];
 while ($row = $tasks_result->fetch_assoc()) {
     $tasks[$row['ID']] = $row['TASK_NAME'];
