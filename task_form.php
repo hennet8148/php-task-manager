@@ -1,3 +1,56 @@
+<?php
+// Database connection
+$servername = "localhost";
+$username = "CHUCK";
+$password = "Jack.BOX.1234";
+$dbname = "NECK";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Initialize variables
+$neck_id = "";
+$tasks = [];
+
+// Handle filter by Neck ID
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['filter_neck'])) {
+    $neck_id = intval($_POST['neck_id']);
+
+    // Fetch tasks for the specified Neck ID
+    $query = "SELECT * FROM TASK WHERE NECK_ID = $neck_id ORDER BY SORT_ORDER";
+    $result = $conn->query($query);
+
+    if ($result && $result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $tasks[] = $row;
+        }
+    } else {
+        $tasks = []; // No tasks found
+    }
+}
+
+// Handle updating tasks
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_tasks'])) {
+    if (!empty($_POST['tasks']) && is_array($_POST['tasks'])) {
+        foreach ($_POST['tasks'] as $task_id => $task_data) {
+            $task_id = intval($task_id);
+            $notes = $conn->real_escape_string($task_data['notes']);
+            $complete = isset($task_data['complete']) ? 1 : 0;
+
+            // Update each task
+            $update_query = "UPDATE TASK SET NOTES = '$notes', COMPLETE = $complete WHERE ID = $task_id";
+            $conn->query($update_query);
+        }
+        echo "<div class='success'>Tasks updated successfully!</div>";
+    } else {
+        echo "<div class='error'>No tasks to update.</div>";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -97,7 +150,7 @@
             margin: 20px auto;
             display: block;
             padding: 15px 25px;
-            background-color: #28a745;
+            background-color: #0056b3;
             color: white;
             border: none;
             border-radius: 5px;
@@ -106,7 +159,7 @@
         }
 
         button[type="submit"]:hover {
-            background-color: #218838;
+            background-color: #004494;
         }
 
         .error {
