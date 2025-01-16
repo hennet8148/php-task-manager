@@ -1,11 +1,9 @@
 <?php
 // Database connection
-// Database connection
 $servername = "localhost";
 $username = "CHUCK";
 $password = "Jack.BOX.1234";
 $dbname = "NECK";
-
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -32,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (!empty($template_id)) {
         // Update the row
-        $update_query = "UPDATE TASK_TEMPLATE 
+        $update_query = "UPDATE TASK_TEMPLATE
                          SET PARENT_ID = " . ($parent_id === '' ? 'NULL' : "'$parent_id'") . ",
                              TASK_NAME = '$task_name',
                              TASK_TYPE = '$task_type',
@@ -46,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     } else {
         // Insert a new row
-        $insert_query = "INSERT INTO TASK_TEMPLATE (PARENT_ID, TASK_NAME, TASK_TYPE, SORT_ORDER, NOTES) 
+        $insert_query = "INSERT INTO TASK_TEMPLATE (PARENT_ID, TASK_NAME, TASK_TYPE, SORT_ORDER, NOTES)
                          VALUES (" . ($parent_id === '' ? 'NULL' : "'$parent_id'") . ", '$task_name', '$task_type', '$sort_order', '$notes')";
         if ($conn->query($insert_query) === TRUE) {
             echo "<div class='success'>New task template added successfully!</div>";
@@ -85,165 +83,84 @@ if (isset($_GET['edit_id'])) {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Template Management</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 0;
-            background-color: #f4f4f9;
-        }
-
-        h2 {
-            color: #333;
-        }
-
-        form {
-            background: #fff;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            max-width: 500px;
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin: 10px 0 5px;
-        }
-
-        input[type="text"], textarea, select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-bottom: 15px;
-        }
-
-        input[type="submit"] {
-            background-color: #5cb85c;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #4cae4c;
-        }
-
-        .success {
-            color: green;
-            margin: 10px 0;
-        }
-
-        .error {
-            color: red;
-            margin: 10px 0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        table th, table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        table th {
-            background-color: #f4f4f4;
-        }
-
-        .links {
-            margin-top: 10px;
-        }
-
-        .links a {
-            text-decoration: none;
-            color: #007bff;
-            margin-right: 15px;
-        }
-
-        .links a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h2><?php echo empty($template_id) ? "Add a New Task Template" : "Edit Task Template"; ?></h2>
-    <form method="post" action="">
-        <input type="hidden" name="template_id" value="<?php echo $template_id; ?>">
-        <label for="parent_id">Parent ID:</label>
-        <input type="text" id="parent_id" name="parent_id" value="<?php echo $parent_id; ?>">
+    <?php include 'navbar.php'; ?>
 
-        <label for="task_name">Task Name:</label>
-        <input type="text" id="task_name" name="task_name" value="<?php echo $task_name; ?>" required>
+    <main>
+        <h2><?php echo empty($template_id) ? "Add a New Task Template" : "Edit Task Template"; ?></h2>
+        <form method="post" action="">
+            <input type="hidden" name="template_id" value="<?php echo $template_id; ?>">
+            <label for="parent_id">Parent ID:</label>
+            <input type="text" id="parent_id" name="parent_id" value="<?php echo $parent_id; ?>">
 
-        <label for="task_type">Task Type:</label>
-        <select id="task_type" name="task_type" required>
-            <option value="">--Select Task Type--</option>
-            <option value="Step" <?php echo $task_type == 'Step' ? 'selected' : ''; ?>>Step</option>
-            <option value="Sub-Step" <?php echo $task_type == 'Sub-Step' ? 'selected' : ''; ?>>Sub-Step</option>
-            <option value="Setup" <?php echo $task_type == 'Setup' ? 'selected' : ''; ?>>Setup</option>
-            <option value="Operation" <?php echo $task_type == 'Operation' ? 'selected' : ''; ?>>Operation</option>
-        </select>
+            <label for="task_name">Task Name:</label>
+            <input type="text" id="task_name" name="task_name" value="<?php echo $task_name; ?>" required>
 
-        <label for="sort_order">Sort Order:</label>
-        <input type="text" id="sort_order" name="sort_order" value="<?php echo $sort_order; ?>" required>
+            <label for="task_type">Task Type:</label>
+            <select id="task_type" name="task_type" required>
+                <option value="">--Select Task Type--</option>
+                <option value="Step" <?php echo $task_type == 'Step' ? 'selected' : ''; ?>>Step</option>
+                <option value="Sub-Step" <?php echo $task_type == 'Sub-Step' ? 'selected' : ''; ?>>Sub-Step</option>
+                <option value="Setup" <?php echo $task_type == 'Setup' ? 'selected' : ''; ?>>Setup</option>
+                <option value="Operation" <?php echo $task_type == 'Operation' ? 'selected' : ''; ?>>Operation</option>
+            </select>
 
-        <label for="notes">Notes:</label>
-        <textarea id="notes" name="notes"><?php echo $notes; ?></textarea>
+            <label for="sort_order">Sort Order:</label>
+            <input type="text" id="sort_order" name="sort_order" value="<?php echo $sort_order; ?>" required>
 
-        <input type="submit" value="<?php echo empty($template_id) ? "Submit" : "Update"; ?>">
-    </form>
+            <label for="notes">Notes:</label>
+            <textarea id="notes" name="notes"><?php echo $notes; ?></textarea>
 
-    <div class="links">
-        <a href="?">Add New Task Template</a>
-        <a href="?view=all">View All Task Templates</a>
-        <a href="neck_form.php">Manage Necks</a>
-    </div>
+            <button type="submit"><?php echo empty($template_id) ? "Submit" : "Update"; ?></button>
+        </form>
 
-    <h2>Existing Task Templates</h2>
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Parent ID</th>
-            <th>Task Name</th>
-            <th>Task Type</th>
-            <th>Sort Order</th>
-            <th>Notes</th>
-            <th>Actions</th>
-        </tr>
-        <?php
-        $result = $conn->query("SELECT * FROM TASK_TEMPLATE ORDER BY SORT_ORDER");
+        <h2>Existing Task Templates</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Parent ID</th>
+                    <th>Task Name</th>
+                    <th>Task Type</th>
+                    <th>Sort Order</th>
+                    <th>Notes</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $result = $conn->query("SELECT * FROM TASK_TEMPLATE ORDER BY SORT_ORDER");
 
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                echo "<tr>
-                        <td>" . $row["ID"] . "</td>
-                        <td>" . $row["PARENT_ID"] . "</td>
-                        <td>" . $row["TASK_NAME"] . "</td>
-                        <td>" . $row["TASK_TYPE"] . "</td>
-                        <td>" . $row["SORT_ORDER"] . "</td>
-                        <td>" . $row["NOTES"] . "</td>
-                        <td>
-                            <a href='?edit_id=" . $row["ID"] . "'>Edit</a> |
-                            <a href='?delete_id=" . $row["ID"] . "' onclick=\"return confirm('Are you sure you want to delete this task?');\">Delete</a>
-                        </td>
-                      </tr>";
-            }
-        } else {
-            echo "<tr><td colspan='7'>No task templates found</td></tr>";
-        }
-        ?>
-    </table>
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo "<tr>
+                                <td>" . $row["ID"] . "</td>
+                                <td>" . $row["PARENT_ID"] . "</td>
+                                <td>" . $row["TASK_NAME"] . "</td>
+                                <td>" . $row["TASK_TYPE"] . "</td>
+                                <td>" . $row["SORT_ORDER"] . "</td>
+                                <td>" . $row["NOTES"] . "</td>
+                                <td>
+                                    <a href='?edit_id=" . $row["ID"] . "'>Edit</a> |
+                                    <a href='?delete_id=" . $row["ID"] . "' onclick=\"return confirm('Are you sure you want to delete this task?');\">Delete</a>
+                                </td>
+                              </tr>";
+                    }
+                } else {
+                    echo "<tr><td colspan='7'>No task templates found</td></tr>";
+                }
+                ?>
+            </tbody>
+        </table>
+    </main>
+
+    <?php include 'footer.php'; ?>
 </body>
 </html>
-
