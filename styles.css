@@ -1,0 +1,71 @@
+<?php
+require_once 'config.php'; // Include the configuration file
+
+$conn = new mysqli($db_config['servername'], $db_config['username'], $db_config['password'], $db_config['dbname']);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+
+// Fetch current settings
+$settings = [];
+$result = $conn->query("SELECT * FROM site_settings");
+while ($row = $result->fetch_assoc()) {
+    $settings[$row['setting_name']] = $row['setting_value'];
+}
+
+// Output CSS
+header("Content-Type: text/css");
+?>
+
+/* Global Styles */
+body {
+    font-family: <?= $settings['body_font'] ?>;
+    margin: 0;
+    padding: 0;
+    background-color: <?= $settings['background_color'] ?>;
+    color: <?= $settings['text_color'] ?>;
+    font-size: 14px;
+}
+
+header, footer {
+    background-color: <?= $settings['primary_color'] ?>;
+    color: white;
+    text-align: center;
+    padding: 8px 0;
+    font-size: 14px;
+}
+
+nav {
+    background-color: <?= $settings['secondary_color'] ?>;
+    padding: 8px;
+    text-align: center;
+    font-size: 13px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 8px;
+    font-weight: bold;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+main {
+    padding: 15px;
+}
+
+form {
+    max-width: <?= $settings['form_width'] ?>;
+    margin: 15px auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Other styles using dynamic settings */
