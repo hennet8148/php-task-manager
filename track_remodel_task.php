@@ -1,10 +1,13 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 require 'config.php'; // Include database credentials
 
 // Database connection
-$conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+$conn = new mysqli(
+    $db_config['servername'],
+    $db_config['username'],
+    $db_config['password'],
+    $db_config['dbname']
+);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -91,7 +94,12 @@ $conn->close();
             <th>Completed</th>
         </tr>
         <?php
-        $conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+        $conn = new mysqli(
+            $db_config['servername'],
+            $db_config['username'],
+            $db_config['password'],
+            $db_config['dbname']
+        );
         $tasksResult = $conn->query("SELECT t.TaskName, t.TimeEstimateMinutes, c.CategoryName, d.TaskName AS DependencyName, t.Completed, t.TaskOrder
                                      FROM Remodel_Task_Tracking t
                                      LEFT JOIN Remodel_Categories c ON t.CategoryID = c.CategoryID
