@@ -1,4 +1,9 @@
 <?php
+
+if (!$tasks) {
+    die("Error fetching tasks: " . $conn->error);
+}
+
 require 'config.php'; // Database credentials
 
 // Database connection
