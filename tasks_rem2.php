@@ -45,15 +45,7 @@ if ($action === 'delete') {
 $tasks = $conn->query("SELECT t.*, c.CategoryName, d.TaskName AS DependencyName FROM Remodel_Task_Tracking t
     LEFT JOIN Remodel_Categories c ON t.CategoryID = c.CategoryID
     LEFT JOIN Remodel_Task_Tracking d ON t.Dependency = d.TaskID ORDER BY t.TaskOrder ASC");
-if (!$tasks) {
-    die("Error fetching tasks: " . $conn->error);
-}
-
 $categories = $conn->query("SELECT * FROM Remodel_Categories");
-if (!$categories) {
-    die("Error fetching categories: " . $conn->error);
-}
-$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -69,20 +61,8 @@ $conn->close();
     <form method="POST" action="?action=<?= isset($_GET['edit']) ? 'edit' : 'add' ?>">
         <?php if (isset($_GET['edit']) && isset($_GET['task_id'])): ?>
             <?php
-            $conn = new mysqli(
-                $db_config['servername'],
-                $db_config['username'],
-                $db_config['password'],
-                $db_config['dbname']
-            );
-            if ($conn->connect_error) {
-                die("Connection failed: " . $conn->connect_error);
-            }
-
             $taskId = intval($_GET['task_id']);
-            $editTaskResult = $conn->query("SELECT * FROM Remodel_Task_Tracking WHERE TaskID=$taskId");
-            $editTask = $editTaskResult->fetch_assoc();
-            $conn->close();
+            $editTask = $conn->query("SELECT * FROM Remodel_Task_Tracking WHERE TaskID=$taskId")->fetch_assoc();
             ?>
             <input type="hidden" name="task_id" value="<?= $editTask['TaskID'] ?>">
         <?php endif; ?>
@@ -101,11 +81,11 @@ $conn->close();
         <label>Dependency:
             <select name="dependency">
                 <option value="">None</option>
-                <?php foreach ($tasks as $task): ?>
+                <?php while ($task = $tasks->fetch_assoc()): ?>
                     <option value="<?= $task['TaskID'] ?>" <?= isset($editTask) && $editTask['Dependency'] == $task['TaskID'] ? 'selected' : '' ?>>
                         <?= $task['TaskName'] ?>
                     </option>
-                <?php endforeach; ?>
+                <?php endwhile; ?>
             </select>
         </label><br>
         <label>Task Order: <input type="number" name="task_order" value="<?= $editTask['TaskOrder'] ?? '' ?>" required></label><br>
@@ -123,7 +103,7 @@ $conn->close();
             <th>Completed</th>
             <th>Actions</th>
         </tr>
-        <?php while ($task = $tasks->fetch_assoc()): ?>
+        <?php $tasks->data_seek(0); while ($task = $tasks->fetch_assoc()): ?>
             <tr>
                 <td><?= htmlspecialchars($task['TaskName']) ?></td>
                 <td><?= $task['TimeEstimateMinutes'] ?></td>
