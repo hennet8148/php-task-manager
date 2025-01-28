@@ -31,13 +31,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 }
 
 // Handle form submission for editing a task
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'edit') {
-    $taskId = intval($_GET['task_id']);
-    $taskName = $conn->real_escape_string($_GET['task_name']);
-    $timeEstimate = intval($_GET['time_estimate']);
-    $categoryId = intval($_GET['category_id']);
-    $dependency = isset($_GET['dependency']) ? intval($_GET['dependency']) : NULL;
-    $taskOrder = intval($_GET['task_order']);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'edit') {
+    $taskId = intval($_POST['task_id']);
+    $taskName = $conn->real_escape_string($_POST['task_name']);
+    $timeEstimate = intval($_POST['time_estimate']);
+    $categoryId = intval($_POST['category_id']);
+    $dependency = isset($_POST['dependency']) ? intval($_POST['dependency']) : NULL;
+    $taskOrder = intval($_POST['task_order']);
 
     $sql = "UPDATE Remodel_Task_Tracking
             SET TaskName = '$taskName', TimeEstimateMinutes = $timeEstimate, CategoryID = $categoryId, Dependency = ". ($dependency ? "$dependency" : "NULL") .", TaskOrder = $taskOrder
@@ -149,12 +149,54 @@ $conn->close();
                 <td><?= $row['TaskOrder'] ?></td>
                 <td><?= $row['Completed'] ? 'Yes' : 'No' ?></td>
                 <td>
-                    <a href="?action=edit&task_id=<?= $row['TaskID'] ?>&task_name=<?= urlencode($row['TaskName']) ?>&time_estimate=<?= $row['TimeEstimateMinutes'] ?>&category_id=<?= $row['CategoryName'] ?>&dependency=<?= $row['DependencyName'] ?>&task_order=<?= $row['TaskOrder'] ?>">Edit</a> |
+                    <a href="?action=edit_form&task_id=<?= $row['TaskID'] ?>">Edit</a> |
                     <a href="?action=delete&task_id=<?= $row['TaskID'] ?>" onclick="return confirm('Are you sure you want to delete this task?');">Delete</a>
                 </td>
             </tr>
         <?php endwhile; ?>
         <?php $conn->close(); ?>
     </table>
+
+    <?php if (isset($_GET['action']) && $_GET['action'] === 'edit_form' && isset($_GET['task_id'])):
+        $taskId = intval($_GET['task_id']);
+        $taskResult = $conn->query("SELECT * FROM Remodel_Task_Tracking WHERE TaskID = $taskId");
+        $task = $taskResult->fetch_assoc();
+    ?>
+        <h2>Edit Task</h2>
+        <form method="POST" action="">
+            <input type="hidden" name="action" value="edit">
+            <input type="hidden" name="task_id" value="<?= $task['TaskID'] ?>">
+
+            <label for="task_name">Task Name:</label>
+            <input type="text" id="task_name" name="task_name" value="<?= htmlspecialchars($task['TaskName']) ?>" required><br>
+
+            <label for="time_estimate">Time Estimate (minutes):</label>
+            <input type="number" id="time_estimate" name="time_estimate" value="<?= $task['TimeEstimateMinutes'] ?>" required><br>
+
+            <label for="category_id">Category:</label>
+            <select id="category_id" name="category_id" required>
+                <?php foreach ($categories as $category): ?>
+                    <option value="<?= $category['CategoryID'] ?>" <?= $category['CategoryID'] == $task['CategoryID'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($category['CategoryName']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select><br>
+
+            <label for="dependency">Dependency (Optional):</label>
+            <select id="dependency" name="dependency">
+                <option value="">-- No Dependency --</option>
+                <?php foreach ($tasks as $t): ?>
+                    <option value="<?= $t['TaskID'] ?>" <?= $t['TaskID'] == $task['Dependency'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($t['TaskName']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select><br>
+
+            <label for="task_order">Task Order:</label>
+            <input type="number" id="task_order" name="task_order" value="<?= $task['TaskOrder'] ?>" required><br>
+
+            <button type="submit">Update Task</button>
+        </form>
+    <?php endif; ?>
 </body>
 </html>
