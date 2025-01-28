@@ -31,13 +31,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 }
 
 // Handle form submission for editing a task
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'edit') {
-    $taskId = intval($_POST['task_id']);
-    $taskName = $conn->real_escape_string($_POST['task_name']);
-    $timeEstimate = intval($_POST['time_estimate']);
-    $categoryId = intval($_POST['category_id']);
-    $dependency = isset($_POST['dependency']) ? intval($_POST['dependency']) : NULL;
-    $taskOrder = intval($_POST['task_order']);
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'edit') {
+    $taskId = intval($_GET['task_id']);
+    $taskName = $conn->real_escape_string($_GET['task_name']);
+    $timeEstimate = intval($_GET['time_estimate']);
+    $categoryId = intval($_GET['category_id']);
+    $dependency = isset($_GET['dependency']) ? intval($_GET['dependency']) : NULL;
+    $taskOrder = intval($_GET['task_order']);
 
     $sql = "UPDATE Remodel_Task_Tracking
             SET TaskName = '$taskName', TimeEstimateMinutes = $timeEstimate, CategoryID = $categoryId, Dependency = ". ($dependency ? "$dependency" : "NULL") .", TaskOrder = $taskOrder
@@ -51,8 +51,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 }
 
 // Handle deleting a task
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
-    $taskId = intval($_POST['task_id']);
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'delete') {
+    $taskId = intval($_GET['task_id']);
 
     $sql = "DELETE FROM Remodel_Task_Tracking WHERE TaskID = $taskId";
 
@@ -149,16 +149,8 @@ $conn->close();
                 <td><?= $row['TaskOrder'] ?></td>
                 <td><?= $row['Completed'] ? 'Yes' : 'No' ?></td>
                 <td>
-                    <form method="POST" action="" style="display:inline;">
-                        <input type="hidden" name="action" value="edit">
-                        <input type="hidden" name="task_id" value="<?= $row['TaskID'] ?>">
-                        <button type="submit">Edit</button>
-                    </form>
-                    <form method="POST" action="" style="display:inline;">
-                        <input type="hidden" name="action" value="delete">
-                        <input type="hidden" name="task_id" value="<?= $row['TaskID'] ?>">
-                        <button type="submit" onclick="return confirm('Are you sure you want to delete this task?');">Delete</button>
-                    </form>
+                    <a href="?action=edit&task_id=<?= $row['TaskID'] ?>&task_name=<?= urlencode($row['TaskName']) ?>&time_estimate=<?= $row['TimeEstimateMinutes'] ?>&category_id=<?= $row['CategoryName'] ?>&dependency=<?= $row['DependencyName'] ?>&task_order=<?= $row['TaskOrder'] ?>">Edit</a> |
+                    <a href="?action=delete&task_id=<?= $row['TaskID'] ?>" onclick="return confirm('Are you sure you want to delete this task?');">Delete</a>
                 </td>
             </tr>
         <?php endwhile; ?>
