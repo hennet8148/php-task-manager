@@ -45,7 +45,13 @@ if ($action === 'delete') {
 $tasks = $conn->query("SELECT t.*, c.CategoryName, d.TaskName AS DependencyName FROM Remodel_Task_Tracking t
     LEFT JOIN Remodel_Categories c ON t.CategoryID = c.CategoryID
     LEFT JOIN Remodel_Task_Tracking d ON t.Dependency = d.TaskID ORDER BY t.TaskOrder ASC");
+if (!$tasks) {
+    die("Error fetching tasks: " . $conn->error);
+}
 $categories = $conn->query("SELECT * FROM Remodel_Categories");
+if (!$categories) {
+    die("Error fetching categories: " . $conn->error);
+}
 ?>
 
 <!DOCTYPE html>
@@ -62,7 +68,11 @@ $categories = $conn->query("SELECT * FROM Remodel_Categories");
         <?php if (isset($_GET['edit']) && isset($_GET['task_id'])): ?>
             <?php
             $taskId = intval($_GET['task_id']);
-            $editTask = $conn->query("SELECT * FROM Remodel_Task_Tracking WHERE TaskID=$taskId")->fetch_assoc();
+            $editTaskResult = $conn->query("SELECT * FROM Remodel_Task_Tracking WHERE TaskID=$taskId");
+            if ($editTaskResult->num_rows === 0) {
+                die("Error: Task not found.");
+            }
+            $editTask = $editTaskResult->fetch_assoc();
             ?>
             <input type="hidden" name="task_id" value="<?= $editTask['TaskID'] ?>">
         <?php endif; ?>
@@ -71,7 +81,7 @@ $categories = $conn->query("SELECT * FROM Remodel_Categories");
         <label>Time Estimate (min): <input type="number" name="time_estimate" value="<?= $editTask['TimeEstimateMinutes'] ?? '' ?>" required></label><br>
         <label>Category:
             <select name="category_id" required>
-                <?php while ($category = $categories->fetch_assoc()): ?>
+                <?php $categories->data_seek(0); while ($category = $categories->fetch_assoc()): ?>
                     <option value="<?= $category['CategoryID'] ?>" <?= isset($editTask) && $editTask['CategoryID'] == $category['CategoryID'] ? 'selected' : '' ?>>
                         <?= $category['CategoryName'] ?>
                     </option>
@@ -81,7 +91,7 @@ $categories = $conn->query("SELECT * FROM Remodel_Categories");
         <label>Dependency:
             <select name="dependency">
                 <option value="">None</option>
-                <?php while ($task = $tasks->fetch_assoc()): ?>
+                <?php $tasks->data_seek(0); while ($task = $tasks->fetch_assoc()): ?>
                     <option value="<?= $task['TaskID'] ?>" <?= isset($editTask) && $editTask['Dependency'] == $task['TaskID'] ? 'selected' : '' ?>>
                         <?= $task['TaskName'] ?>
                     </option>
