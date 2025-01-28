@@ -2,7 +2,7 @@
 require 'config.php'; // Include database credentials
 
 // Database connection
-$conn = new mysqli($db_config['servername'], $db_config['username'], $db_config['password'], $db_config['dbname']);
+$conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -13,9 +13,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $timeEstimate = intval($_POST['time_estimate']);
     $categoryId = intval($_POST['category_id']);
     $dependency = isset($_POST['dependency']) ? intval($_POST['dependency']) : NULL;
+    $taskOrder = intval($_POST['task_order']);
 
-    $sql = "INSERT INTO Remodel_Task_Tracking (TaskName, TimeEstimateMinutes, CategoryID, Dependency, Completed)
-            VALUES ('$taskName', $timeEstimate, $categoryId, ". ($dependency ? "$dependency" : "NULL") .", FALSE)";
+    $sql = "INSERT INTO Remodel_Task_Tracking (TaskName, TimeEstimateMinutes, CategoryID, Dependency, Completed, TaskOrder)
+            VALUES ('$taskName', $timeEstimate, $categoryId, ". ($dependency ? "$dependency" : "NULL") .", FALSE, $taskOrder)";
 
     if ($conn->query($sql) === TRUE) {
         echo "Task added successfully!";
@@ -71,6 +72,9 @@ $conn->close();
             <?php endforeach; ?>
         </select><br>
 
+        <label for="task_order">Task Order:</label>
+        <input type="number" id="task_order" name="task_order" required><br>
+
         <button type="submit">Add Task</button>
     </form>
 
@@ -81,20 +85,23 @@ $conn->close();
             <th>Time Estimate (minutes)</th>
             <th>Category</th>
             <th>Dependency</th>
+            <th>Task Order</th>
             <th>Completed</th>
         </tr>
         <?php
-        $conn = new mysqli($db_config['servername'], $db_config['username'], $db_config['password'], $db_config['dbname']);
-        $tasksResult = $conn->query("SELECT t.TaskName, t.TimeEstimateMinutes, c.CategoryName, d.TaskName AS DependencyName, t.Completed
+        $conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+        $tasksResult = $conn->query("SELECT t.TaskName, t.TimeEstimateMinutes, c.CategoryName, d.TaskName AS DependencyName, t.Completed, t.TaskOrder
                                      FROM Remodel_Task_Tracking t
                                      LEFT JOIN Remodel_Categories c ON t.CategoryID = c.CategoryID
-                                     LEFT JOIN Remodel_Task_Tracking d ON t.Dependency = d.TaskID");
+                                     LEFT JOIN Remodel_Task_Tracking d ON t.Dependency = d.TaskID
+                                     ORDER BY t.TaskOrder ASC");
         while ($row = $tasksResult->fetch_assoc()): ?>
             <tr>
                 <td><?= htmlspecialchars($row['TaskName']) ?></td>
                 <td><?= $row['TimeEstimateMinutes'] ?></td>
                 <td><?= htmlspecialchars($row['CategoryName']) ?></td>
                 <td><?= htmlspecialchars($row['DependencyName'] ?? 'None') ?></td>
+                <td><?= $row['TaskOrder'] ?></td>
                 <td><?= $row['Completed'] ? 'Yes' : 'No' ?></td>
             </tr>
         <?php endwhile; ?>
