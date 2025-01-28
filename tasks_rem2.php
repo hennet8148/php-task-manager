@@ -1,9 +1,4 @@
 <?php
-
-if (!$tasks) {
-    die("Error fetching tasks: " . $conn->error);
-}
-
 require 'config.php'; // Database credentials
 
 // Database connection
@@ -50,7 +45,14 @@ if ($action === 'delete') {
 $tasks = $conn->query("SELECT t.*, c.CategoryName, d.TaskName AS DependencyName FROM Remodel_Task_Tracking t
     LEFT JOIN Remodel_Categories c ON t.CategoryID = c.CategoryID
     LEFT JOIN Remodel_Task_Tracking d ON t.Dependency = d.TaskID ORDER BY t.TaskOrder ASC");
+if (!$tasks) {
+    die("Error fetching tasks: " . $conn->error);
+}
+
 $categories = $conn->query("SELECT * FROM Remodel_Categories");
+if (!$categories) {
+    die("Error fetching categories: " . $conn->error);
+}
 $conn->close();
 ?>
 
@@ -65,8 +67,23 @@ $conn->close();
     <h1>Remodel Task Tracking</h1>
 
     <form method="POST" action="?action=<?= isset($_GET['edit']) ? 'edit' : 'add' ?>">
-        <?php if (isset($_GET['edit'])): ?>
-            <?php $editTask = $tasks->fetch_assoc(); ?>
+        <?php if (isset($_GET['edit']) && isset($_GET['task_id'])): ?>
+            <?php
+            $conn = new mysqli(
+                $db_config['servername'],
+                $db_config['username'],
+                $db_config['password'],
+                $db_config['dbname']
+            );
+            if ($conn->connect_error) {
+                die("Connection failed: " . $conn->connect_error);
+            }
+
+            $taskId = intval($_GET['task_id']);
+            $editTaskResult = $conn->query("SELECT * FROM Remodel_Task_Tracking WHERE TaskID=$taskId");
+            $editTask = $editTaskResult->fetch_assoc();
+            $conn->close();
+            ?>
             <input type="hidden" name="task_id" value="<?= $editTask['TaskID'] ?>">
         <?php endif; ?>
 
