@@ -1,6 +1,11 @@
 <?php
 require 'config.php'; // Database credentials
 
+// Enable error reporting for debugging
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // Database connection
 $conn = new mysqli(
     $db_config['servername'],
@@ -10,11 +15,14 @@ $conn = new mysqli(
 );
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
+} else {
+    echo "Database connection successful.<br>";
 }
 
 // Handle CRUD actions
 $action = $_GET['action'] ?? '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    echo "Processing form submission...<br>";
     $taskName = $conn->real_escape_string($_POST['task_name']);
     $timeEstimate = intval($_POST['time_estimate']);
     $categoryId = intval($_POST['category_id']);
@@ -22,21 +30,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $taskOrder = intval($_POST['task_order']);
 
     if ($action === 'add') {
+        echo "Adding a new task...<br>";
         $sql = "INSERT INTO Remodel_Task_Tracking (TaskName, TimeEstimateMinutes, CategoryID, Dependency, TaskOrder)
                 VALUES ('$taskName', $timeEstimate, $categoryId, $dependency, $taskOrder)";
     } elseif ($action === 'edit') {
+        echo "Editing an existing task...<br>";
         $taskId = intval($_POST['task_id']);
         $sql = "UPDATE Remodel_Task_Tracking SET TaskName='$taskName', TimeEstimateMinutes=$timeEstimate,
                 CategoryID=$categoryId, Dependency=$dependency, TaskOrder=$taskOrder WHERE TaskID=$taskId";
     }
-    $conn->query($sql);
+    if ($conn->query($sql) === TRUE) {
+        echo "Query executed successfully: $sql<br>";
+    } else {
+        echo "Error executing query: " . $conn->error . "<br>";
+    }
     header("Location: ?");
     exit;
 }
 
 if ($action === 'delete') {
+    echo "Deleting a task...<br>";
     $taskId = intval($_GET['task_id']);
-    $conn->query("DELETE FROM Remodel_Task_Tracking WHERE TaskID=$taskId");
+    $sql = "DELETE FROM Remodel_Task_Tracking WHERE TaskID=$taskId";
+    if ($conn->query($sql) === TRUE) {
+        echo "Task deleted successfully.<br>";
+    } else {
+        echo "Error deleting task: " . $conn->error . "<br>";
+    }
     header("Location: ?");
     exit;
 }
@@ -47,10 +67,15 @@ $tasks = $conn->query("SELECT t.*, c.CategoryName, d.TaskName AS DependencyName 
     LEFT JOIN Remodel_Task_Tracking d ON t.Dependency = d.TaskID ORDER BY t.TaskOrder ASC");
 if (!$tasks) {
     die("Error fetching tasks: " . $conn->error);
+} else {
+    echo "Tasks fetched: " . $tasks->num_rows . "<br>";
 }
+
 $categories = $conn->query("SELECT * FROM Remodel_Categories");
 if (!$categories) {
     die("Error fetching categories: " . $conn->error);
+} else {
+    echo "Categories fetched: " . $categories->num_rows . "<br>";
 }
 ?>
 
@@ -73,6 +98,7 @@ if (!$categories) {
                 die("Error: Task not found.");
             }
             $editTask = $editTaskResult->fetch_assoc();
+            echo "Loaded task for editing: " . htmlspecialchars($editTask['TaskName']) . "<br>";
             ?>
             <input type="hidden" name="task_id" value="<?= $editTask['TaskID'] ?>">
         <?php endif; ?>
