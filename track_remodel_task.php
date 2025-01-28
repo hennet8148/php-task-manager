@@ -16,7 +16,7 @@ if ($conn->connect_error) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add') {
     $taskName = $conn->real_escape_string($_POST['task_name']);
     $timeEstimate = intval($_POST['time_estimate']);
-    $1
+    $categoryId = intval($_POST['category_id']);
     $categoryExists = $conn->query("SELECT 1 FROM Remodel_Categories WHERE CategoryID = $categoryId");
     if ($categoryExists->num_rows === 0) {
         die("Error: Invalid CategoryID. Please select a valid category.");
