@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $taskName = $conn->real_escape_string($_POST['task_name']);
     $timeEstimate = intval($_POST['time_estimate']);
     $categoryId = intval($_POST['category_id']);
-    $dependency = isset($_POST['dependency']) ? intval($_POST['dependency']) : 'NULL';
+    $dependency = empty($_POST['dependency']) ? 'NULL' : intval($_POST['dependency']); // Ensure NULL for empty value
     $taskOrder = intval($_POST['task_order']);
 
     if ($action === 'add') {
