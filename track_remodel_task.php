@@ -12,8 +12,8 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Handle form submission for adding a new task
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add') {
     $taskName = $conn->real_escape_string($_POST['task_name']);
     $timeEstimate = intval($_POST['time_estimate']);
     $categoryId = intval($_POST['category_id']);
@@ -25,6 +25,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($conn->query($sql) === TRUE) {
         echo "Task added successfully!";
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+    }
+}
+
+// Handle form submission for editing a task
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'edit') {
+    $taskId = intval($_POST['task_id']);
+    $taskName = $conn->real_escape_string($_POST['task_name']);
+    $timeEstimate = intval($_POST['time_estimate']);
+    $categoryId = intval($_POST['category_id']);
+    $dependency = isset($_POST['dependency']) ? intval($_POST['dependency']) : NULL;
+    $taskOrder = intval($_POST['task_order']);
+
+    $sql = "UPDATE Remodel_Task_Tracking
+            SET TaskName = '$taskName', TimeEstimateMinutes = $timeEstimate, CategoryID = $categoryId, Dependency = ". ($dependency ? "$dependency" : "NULL") .", TaskOrder = $taskOrder
+            WHERE TaskID = $taskId";
+
+    if ($conn->query($sql) === TRUE) {
+        echo "Task updated successfully!";
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+    }
+}
+
+// Handle deleting a task
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
+    $taskId = intval($_POST['task_id']);
+
+    $sql = "DELETE FROM Remodel_Task_Tracking WHERE TaskID = $taskId";
+
+    if ($conn->query($sql) === TRUE) {
+        echo "Task deleted successfully!";
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
@@ -51,6 +84,7 @@ $conn->close();
 <body>
     <h1>Remodel Task Tracking</h1>
     <form method="POST" action="">
+        <input type="hidden" name="action" value="add">
         <label for="task_name">Task Name:</label>
         <input type="text" id="task_name" name="task_name" required><br>
 
@@ -92,6 +126,7 @@ $conn->close();
             <th>Dependency</th>
             <th>Task Order</th>
             <th>Completed</th>
+            <th>Actions</th>
         </tr>
         <?php
         $conn = new mysqli(
@@ -100,7 +135,7 @@ $conn->close();
             $db_config['password'],
             $db_config['dbname']
         );
-        $tasksResult = $conn->query("SELECT t.TaskName, t.TimeEstimateMinutes, c.CategoryName, d.TaskName AS DependencyName, t.Completed, t.TaskOrder
+        $tasksResult = $conn->query("SELECT t.TaskID, t.TaskName, t.TimeEstimateMinutes, c.CategoryName, d.TaskName AS DependencyName, t.Completed, t.TaskOrder
                                      FROM Remodel_Task_Tracking t
                                      LEFT JOIN Remodel_Categories c ON t.CategoryID = c.CategoryID
                                      LEFT JOIN Remodel_Task_Tracking d ON t.Dependency = d.TaskID
@@ -113,6 +148,18 @@ $conn->close();
                 <td><?= htmlspecialchars($row['DependencyName'] ?? 'None') ?></td>
                 <td><?= $row['TaskOrder'] ?></td>
                 <td><?= $row['Completed'] ? 'Yes' : 'No' ?></td>
+                <td>
+                    <form method="POST" action="" style="display:inline;">
+                        <input type="hidden" name="action" value="edit">
+                        <input type="hidden" name="task_id" value="<?= $row['TaskID'] ?>">
+                        <button type="submit">Edit</button>
+                    </form>
+                    <form method="POST" action="" style="display:inline;">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="task_id" value="<?= $row['TaskID'] ?>">
+                        <button type="submit" onclick="return confirm('Are you sure you want to delete this task?');">Delete</button>
+                    </form>
+                </td>
             </tr>
         <?php endwhile; ?>
         <?php $conn->close(); ?>
